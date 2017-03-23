@@ -110,5 +110,5 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}_LIB
 #                       ${catkin_LIBRARIES})
 
 #Build examples
-# ADD_SUBDIRECTORY(src/examples)
+ADD_SUBDIRECTORY(src/examples)
 

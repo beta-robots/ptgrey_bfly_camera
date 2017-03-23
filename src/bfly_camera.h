@@ -37,12 +37,12 @@ class BflyCamera
             bool isInitOk() const;
             int open();
             int close();
-            int configure(const bfly_videoMode vMode, const bfly_pixelFormat pxFormat);
-            int configure(const unsigned int streamCh);
+            int configure(bfly_videoMode _v_mode, bfly_pixelFormat _px_format);
+            int configure(unsigned int _stream_ch);
             int startAcquisition();
             int stopAcquisition();
             double getFrameRate();
-            int getCurrentImage(cv::Mat & img);
+            int getCurrentImage(cv::Mat & _img);
             void printCameraInfo();
             void printImageInfo() const;
 };

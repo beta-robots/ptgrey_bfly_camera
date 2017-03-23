@@ -1,4 +1,4 @@
-#include "bflyCamera.h"
+#include "bfly_camera.h"
 
 BflyCamera::BflyCamera()
 {
@@ -19,7 +19,7 @@ BflyCamera::BflyCamera()
     std::cout << std::endl << "Number of cameras detected: " << numCameras << std::endl;
     if ( numCameras < 1 )
     {
-        std::cout << "Insufficient number of cameras... exiting" << std::endl;
+        std::cout << "No camera detected. EXIT. " << std::endl;
         return;
     }
 
@@ -82,13 +82,13 @@ int BflyCamera::close()
     return BFLY_SUCCESS;    
 }
 
-int BflyCamera::configure(const bfly_videoMode vMode, const bfly_pixelFormat pxFormat)
+int BflyCamera::configure(bfly_videoMode _v_mode, bfly_pixelFormat _px_format)
 {
     FlyCapture2::GigEImageSettingsInfo flycap_image_settings_Info;
     FlyCapture2::Mode vModeFC2;
     
     //Set video mode
-    switch (vMode)
+    switch (_v_mode)
     {
         case MODE0: vModeFC2 = FlyCapture2::MODE_0; break;
         case MODE1: vModeFC2 = FlyCapture2::MODE_1; break;
@@ -117,12 +117,12 @@ int BflyCamera::configure(const bfly_videoMode vMode, const bfly_pixelFormat pxF
     flycap_image_settings_.offsetY = 0;
     flycap_image_settings_.height = flycap_image_settings_Info.maxHeight;
     flycap_image_settings_.width = flycap_image_settings_Info.maxWidth;
-    switch (pxFormat)
+    switch (_px_format)
     {
         case MONO8: flycap_image_settings_.pixelFormat = FlyCapture2::PIXEL_FORMAT_MONO8; break;
         case RGB8: flycap_image_settings_.pixelFormat = FlyCapture2::PIXEL_FORMAT_RGB8; break;
         default:
-                std::cout << "BflyCamera::configure(): Unknown pixel format: " << pxFormat << std::endl;
+                std::cout << "BflyCamera::configure(): Unknown pixel format: " << _px_format << std::endl;
                 return BFLY_ERROR;
                 break;
     }
@@ -137,7 +137,7 @@ int BflyCamera::configure(const bfly_videoMode vMode, const bfly_pixelFormat pxF
     return BFLY_SUCCESS;
 }
 
-int BflyCamera::configure(const unsigned int streamCh)
+int BflyCamera::configure(unsigned int _stream_ch)
 {
       
 }
@@ -180,7 +180,7 @@ double BflyCamera::getFrameRate()
     return frameRate.absValue;
 }
 
-int BflyCamera::getCurrentImage(cv::Mat & img)
+int BflyCamera::getCurrentImage(cv::Mat & _img)
 {
     //Gets current camera buffer image
     flycap_error_ = flycap_camera_.RetrieveBuffer( &flycap_image_ );
@@ -202,7 +202,7 @@ int BflyCamera::getCurrentImage(cv::Mat & img)
     opencv_image_.data = flycap_image_(0,0);//set cv data pointer to flycap_image_ address
     
     //clone to external argument image
-    img = opencv_image_.clone();
+    _img = opencv_image_.clone();
     
     //return success
     return BFLY_SUCCESS;
