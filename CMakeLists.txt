@@ -40,18 +40,20 @@ find_package(
     COMPONENTS 
         roscpp 
         rospy 
+        genmsg
         dynamic_reconfigure 
         std_msgs
         sensor_msgs 
         image_transport 
         cv_bridge
 )
+INCLUDE_DIRECTORIES(src/ ${catkin_INCLUDE_DIRS})
 
-#OPenCV
+#OpenCV
 FIND_PACKAGE(OpenCV REQUIRED)
 INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
 
-#Point Grey's SDK. No Find...cmake file
+#Point Grey's SDK. There is no Find...cmake file, so manual setting
 SET (ptgrey_INCLUDE_DIRS "/usr/include/flycapture")
 SET (ptgrey_LIBRARIES "flycapture")
 INCLUDE_DIRECTORIES(${ptgrey_INCLUDE_DIRS})
@@ -61,23 +63,16 @@ SET(SRCS_LIB
     src/bfly_camera.cpp
 )
 
-# SET(SRCS_NODE
-#     src/bfly_camera_node.cpp
-#     src/bfly_camera_node_main.cpp
-# )
-        
-# add_service_files(
-#   FILES
-#   ImageAsService.srv
-# )
+SET(SRCS_NODE
+    src/bfly_camera_node.cpp
+    src/bfly_camera_node_main.cpp
+)
+ 
+# Generate added messages and services
+add_service_files(FILES ImageAsService.srv)
+generate_messages(DEPENDENCIES std_msgs)
 
-## Generate added messages and services
-# generate_messages(
-#       DEPENDENCIES 
-#       std_msgs 
-# )
-
-#dynamic reconfigure cfg file
+# dynamic reconfigure cfg file
 # generate_dynamic_reconfigure_options(cfg/bfly_camera_params.cfg)
 
 ## The catkin_package macro generates cmake config files for your package
@@ -85,6 +80,7 @@ catkin_package(
     CATKIN_DEPENDS 
         roscpp 
         rospy 
+        genmsg
         dynamic_reconfigure 
         std_msgs
         sensor_msgs
@@ -92,23 +88,23 @@ catkin_package(
         cv_bridge        
 )
 
-#Build library, linked with Point Grey's SDK
+# Build library, linked with Point Grey's SDK
 ADD_LIBRARY(${PROJECT_NAME}_LIB SHARED 
             ${SRCS_LIB})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}_LIB 
                       ${ptgrey_LIBRARIES}
                       ${OpenCV_LIBS})
 
-#Build ROS node executable
-# ADD_EXECUTABLE(${PROJECT_NAME} 
-#                ${SRCS_NODE})
-# add_dependencies(${PROJECT_NAME} 
-#                  ${PROJECT_NAME}_gencpp 
-#                  ${PROJECT_NAME}_gencfg)               
-# TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
-#                       ${PROJECT_NAME}_LIB
-#                       ${catkin_LIBRARIES})
+# Build ROS node executable
+ADD_EXECUTABLE(${PROJECT_NAME} 
+               ${SRCS_NODE})
+add_dependencies(${PROJECT_NAME} 
+                 ${PROJECT_NAME}_gencpp 
+                 ${PROJECT_NAME}_gencfg)               
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
+                      ${PROJECT_NAME}_LIB
+                      ${catkin_LIBRARIES})
 
-#Build examples
+# Build examples
 ADD_SUBDIRECTORY(src/examples)
 
