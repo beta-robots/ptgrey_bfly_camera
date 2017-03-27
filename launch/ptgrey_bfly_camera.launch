@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<!-- Launches ensenso_nx capture node, and visualization according rviz param  -->
+
+<launch>
+
+    <!-- User Args  -->
+    <arg name="rviz" default="true" doc="rviz visualization or not"/>
+<!--     <arg name="config_file" default="$(find ensenso_nx)/config/ensenso_nx_params.yaml" doc="YAML file with configutaion parameters"/> -->
+    
+    <!-- ensenso_nx node -->
+    <node   
+        pkg="ptgrey_bfly_camera"
+        type="ptgrey_bfly_camera"
+        name="ptgrey_bfly_camera"
+        output="screen">
+<!--         <rosparam command="load" file="$(arg config_file)"/> -->
+    </node>      
+    
+    <!--visualization-->
+<!--    <group if="$(arg rviz)">
+        <node 
+            name="rviz"
+            pkg="rviz"
+            type="rviz" 
+            args="-d $(find ptgrey_bfly_camera)/rviz/ptgrey_bfly_camera.rviz">
+        </node>
+    </group>-->
+    
+</launch>
+
