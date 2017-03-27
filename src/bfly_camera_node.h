@@ -53,6 +53,7 @@ class BflyCameraNode
         //node configuration parameters
         RunMode run_mode_;//run mode: The node acts as a server, or a continuous pcl publisher        
         double rate_; //loop rate
+        std::string camera_frame_name_; //name of the camera frame of reference
         
     public:
         //constructor
