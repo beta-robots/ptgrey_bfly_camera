@@ -5,41 +5,39 @@
 //node main
 int main(int argc, char **argv)
 {
-      //init ros
-      ros::init(argc, argv, "bfly_camera_node");
-      
-      //create ros wrapper object
-      BflyCameraNode bfly;
-      
-      //set node loop rate
-      ros::Rate loop_rate(bfly.rate());
-      
-      //node loop 
-      while ( ros::ok() )
-      {
-            //execute pending callbacks
-            ros::spinOnce(); 
+    //init ros
+    ros::init(argc, argv, "bfly_camera_node");
+    
+    //create ros wrapper object
+    BflyCameraNode bfly;
+    
+    //set node loop rate
+    ros::Rate loop_rate(bfly.rate());
+
+    switch(bfly.runMode())
+    {
+        case SERVER: //just spin to give service             
+            ros::spin(); 
+            break;
             
-            //switch according run mode
-            switch(bfly.runMode())
+        case PUBLISHER: //publish loop
+            while ( ros::ok() ) 
             {
-                case SERVER:
-                    //nothing to do, ROS spin will do the job
-                    break;
+                //execute pending callbacks
+                ros::spinOnce(); 
                     
-                case PUBLISHER:
-                    //just publish the cloud
-                    bfly.publish(); 
-                    break;
+                //just publish the cloud
+                bfly.publish(); 
                     
-                default:
-                    break;
+                //relax to fit output rate
+                loop_rate.sleep();            
             }
+            break;
             
-            //relax to fit output rate
-            loop_rate.sleep();            
-      }
-            
-      //exit program
-      return 0;
+        default:
+            break;
+    }
+
+    //exit program
+    return 0;
 }
