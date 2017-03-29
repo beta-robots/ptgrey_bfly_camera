@@ -2,7 +2,7 @@
 ### Overview
 This repository holds code of a [ROS](http://www.ros.org) package for image acquisition with [Black Fly](https://www.ptgrey.com/blackfly-gige-poe-cameras) camera. It is basically a ROS wrapper of the low-level API provided by [Ponit Grey](https://www.ptgrey.com/), the manufacturer of the camera. The ROS node can be configured to act as a server or as publisher at a given rate. 
 
-<!-- ![Camera and cloud at rviz](media/20160801_ensenso_ros_cropped.png) -->
+![Black Fly Camera](media/bfly_camera.jpg)
 
 ### Dependencies
 The package has been tested with the following dependencies:
@@ -10,7 +10,7 @@ The package has been tested with the following dependencies:
 * CMake + gcc
 * [ROS Kinetic](http://wiki.ros.org/kinetic)
 * [OpenCV v3.1](http://www.opencv.org/) (shipped with ROS Kinetic)
-* FlyCapture2 (propietary SDK from manufacturer IDS)
+* FlyCapture2 (propietary SDK from the manufacturer)
 
 
 To install the FlyCapture2 SDK dependency:
