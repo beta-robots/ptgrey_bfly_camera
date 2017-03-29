@@ -9,9 +9,26 @@ BflyCameraNode::BflyCameraNode() :
     rate_ = 1; 
     camera_frame_name_ = "ptgrey_bfly_camera";
     
+    //init the image publisher
+    image_publisher_ = image_tp_.advertise("ensenso_depth_image", 1);
+    
     //constructs the camera object interfacing with HW
     camera_ = new BflyCamera(); 
     
+    //open/connect to the HW device
+    if ( camera_->open() == BFLY_ERROR )
+    {
+        std::cout << "BflyCameraNode::BflyCameraNode(): Error opening the camera" << std::endl;
+        return;        
+    }
+    
+    //configure image acquisition
+    if ( camera_->configure(MODE0,MONO8) == BFLY_ERROR )
+    {
+        std::cout << "BflyCameraNode::BflyCameraNode(): Error configuring the camera" << std::endl;
+        return;        
+    }
+        
     //starts camera image acquisition
     if ( camera_->startAcquisition() == BFLY_ERROR )
     {
@@ -19,6 +36,8 @@ BflyCameraNode::BflyCameraNode() :
         return;
     }
     
+    //print camera info
+    camera_->printCameraInfo();
 }
         
 BflyCameraNode::~BflyCameraNode()

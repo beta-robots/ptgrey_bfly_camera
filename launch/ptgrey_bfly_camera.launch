@@ -18,14 +18,14 @@
     </node>      
     
     <!--visualization-->
-<!--    <group if="$(arg rviz)">
+    <group if="$(arg rviz)">
         <node 
             name="rviz"
             pkg="rviz"
             type="rviz" 
             args="-d $(find ptgrey_bfly_camera)/rviz/ptgrey_bfly_camera.rviz">
         </node>
-    </group>-->
+    </group>
     
 </launch>
 
