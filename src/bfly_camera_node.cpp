@@ -5,12 +5,15 @@ BflyCameraNode::BflyCameraNode() :
     image_tp_(nh_)
 {
     //Set node parameters //TODO: get them from yaml file
-    run_mode_ = PUBLISHER; 
+    run_mode_ = SERVER; 
     rate_ = 1; 
     camera_frame_name_ = "ptgrey_bfly_camera";
     
     //init the image publisher
-    image_publisher_ = image_tp_.advertise("ensenso_depth_image", 1);
+    image_publisher_ = image_tp_.advertise("bfly_raw_image", 1);
+    
+    //init server
+    image_server_ = nh_.advertiseService("bfly_server", &BflyCameraNode::imageServiceCallback, this);    
     
     //constructs the camera object interfacing with HW
     camera_ = new BflyCamera(); 

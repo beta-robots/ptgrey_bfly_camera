@@ -5,7 +5,6 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Image1
-        - /Image1/Status1
       Splitter Ratio: 0.5
     Tree Height: 577
   - Class: rviz/Selection
@@ -26,13 +25,13 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: Image
+    SyncSource: ""
 Visualization Manager:
   Class: ""
   Displays:
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /ptgrey_bfly_camera/ensenso_depth_image
+      Image Topic: /ptgrey_bfly_camera/bfly_raw_image
       Max Value: 1
       Median window: 5
       Min Value: 0

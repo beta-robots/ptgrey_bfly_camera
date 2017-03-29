@@ -43,7 +43,7 @@ $ roslaunch ptgrey_bfly_camera ptgrey_bfly_camera.launch
 ```
 If you are operating the node in run mode "SERVER", from another terminal request the image capture service with the number of images requested. 
 ```shell
-$ rosservice call /bfly_server "num_images: 10"
+$ rosservice call /ptgrey_bfly_camera/bfly_server "num_images: 10"
 ```
 
 ### Troubleshooting
