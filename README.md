@@ -16,13 +16,10 @@ The package has been tested with the following dependencies:
 To install the FlyCapture2 SDK dependency:
 
 1. Download the SDK from the [Point Grey's wbsite](https://www.ptgrey.com/support/downloads)
-2. Install it with
-```shell 
-$ sudo To do ...
-```
+2. Install it by following the instructions in the README file included in the download. 
 
 
-### Download and Build This ROS package
+### Download and build this ROS package
 Download to your ROS workspace /src, with the command:
 ```shell
 $ git clone https://github.com/beta-robots/ptgrey_bfly_camera.git
@@ -32,15 +29,11 @@ and from your ROS workspace, build it with:
 $ catkin_make --only-pkg-with-deps ptgrey_bfly_camera
 ```
 
-### Camera Configuration
+### ROS node configuration
 Edit the .yaml file at config/ folder with the required parameters. 
 
 
-### Camera Operation
-Execute the flycap tool to configure the IP of your camera
-```shell
-$ flycap
-```
+### ROS node execution
 Run the node (by default a rviz window will appear)
 ```shell
 $ roslaunch ptgrey_bfly_camera ptgrey_bfly_camera.launch 
@@ -51,7 +44,7 @@ $ rosservice call /ptgrey_bfly_camera/bfly_server "num_images: 10"
 ```
 
 ### Troubleshooting
-The tool flycap has a set of options to configure the camera
+The tool flycap has a set of options to configure the camera, like setting the device IP among others. 
 ```shell
 $ flycap
 ```
