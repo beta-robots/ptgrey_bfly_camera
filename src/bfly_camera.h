@@ -6,9 +6,13 @@
 #include "FlyCapture2.h"
 #include "opencv2/core/core.hpp"
 
+//
+namespace BflyCamera
+{
+    
 //constants
-const int BFLY_ERROR = -1;
-const int BFLY_SUCCESS = 1;
+const int ERROR = -1;
+const int SUCCESS = 1;
 
 //enums
 enum bfly_videoMode {MODE0 = 0, MODE1, MODE2, MODE3, MODE4, MODE5};
@@ -20,7 +24,7 @@ enum bfly_pixelFormat {MONO8 = 0, RGB8};
  * Class for openCV image acquisition from BlackFly Point Grey camera
  * 
  **/
-class BflyCamera
+class Device
 {
       protected:
             bool init_ok_;
@@ -32,8 +36,8 @@ class BflyCamera
             cv::Mat opencv_image_;
 
       public:
-            BflyCamera();
-            ~BflyCamera();
+            Device();
+            ~Device();
             bool isInitOk() const;
             int open();
             int close();
@@ -45,5 +49,8 @@ class BflyCamera
             int getCurrentImage(cv::Mat & _img);
             void printCameraInfo();
             void printImageInfo() const;
-};
+};//end class
+
+}//end namespace
+
 #endif

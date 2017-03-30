@@ -16,24 +16,24 @@ BflyCameraNode::BflyCameraNode() :
     image_server_ = nh_.advertiseService("bfly_server", &BflyCameraNode::imageServiceCallback, this);    
     
     //constructs the camera object interfacing with HW
-    camera_ = new BflyCamera(); 
+    camera_ = new BflyCamera::Device(); 
     
     //open/connect to the HW device
-    if ( camera_->open() == BFLY_ERROR )
+    if ( camera_->open() == BflyCamera::ERROR )
     {
         std::cout << "BflyCameraNode::BflyCameraNode(): Error opening the camera" << std::endl;
         return;        
     }
     
     //configure image acquisition
-    if ( camera_->configure(MODE0,MONO8) == BFLY_ERROR )
+    if ( camera_->configure(BflyCamera::MODE0,BflyCamera::MONO8) == BflyCamera::ERROR )
     {
         std::cout << "BflyCameraNode::BflyCameraNode(): Error configuring the camera" << std::endl;
         return;        
     }
         
     //starts camera image acquisition
-    if ( camera_->startAcquisition() == BFLY_ERROR )
+    if ( camera_->startAcquisition() == BflyCamera::ERROR )
     {
         std::cout << "BflyCameraNode::BflyCameraNode(): Error starting image acquisition" << std::endl;
         return;

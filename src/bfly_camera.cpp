@@ -1,6 +1,9 @@
 #include "bfly_camera.h"
 
-BflyCamera::BflyCamera()
+namespace BflyCamera
+{
+    
+Device::Device()
 {
     FlyCapture2::BusManager busMgr;
     FlyCapture2::InterfaceType interfaceType;
@@ -16,10 +19,10 @@ BflyCamera::BflyCamera()
         flycap_error_.PrintErrorTrace();
         return;
     }
-    std::cout << std::endl << "Number of cameras detected: " << numCameras << std::endl;
+    std::cout << std::endl << "BflyCamera::Device::Device(): Number of cameras detected: " << numCameras << std::endl;
     if ( numCameras < 1 )
     {
-        std::cout << "No camera detected. EXIT. " << std::endl;
+        std::cout << "BflyCamera::Device::Device() ERROR: No camera detected. EXIT. " << std::endl;
         return;
     }
 
@@ -40,49 +43,49 @@ BflyCamera::BflyCamera()
     }
     if ( interfaceType != FlyCapture2::INTERFACE_GIGE )
     {
-        std::cout << "Error: GigE camera not found" << std::endl;
+        std::cout << "BflyCamera::Device::Device() ERROR: GigE camera not found" << std::endl;
     }
 
     //set init flag
     init_ok_ = true;
-    std::cout << "GigE camera found!" << std::endl;
+    std::cout << "BflyCamera::Device::Device(): GigE camera found!" << std::endl;
 }
 
-BflyCamera::~BflyCamera()
+Device::~Device()
 {
     if ( flycap_camera_.IsConnected() ) this->close();
 }
 
-bool BflyCamera::isInitOk() const
+bool Device::isInitOk() const
 {
     return init_ok_;
 }
 
-int BflyCamera::open()
+int Device::open()
 {
     //connects to the camera
     flycap_error_ = flycap_camera_.Connect(&flycap_guid_);
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
         flycap_error_.PrintErrorTrace();
-        return BFLY_ERROR;
+        return ERROR;
     }
-    return BFLY_SUCCESS;
+    return SUCCESS;
 }
 
-int BflyCamera::close()
+int Device::close()
 {
     // Disconnects from the camera
     flycap_error_ = flycap_camera_.Disconnect();
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
         flycap_error_.PrintErrorTrace();
-        return BFLY_ERROR;
+        return ERROR;
     }
-    return BFLY_SUCCESS;    
+    return SUCCESS;    
 }
 
-int BflyCamera::configure(bfly_videoMode _v_mode, bfly_pixelFormat _px_format)
+int Device::configure(bfly_videoMode _v_mode, bfly_pixelFormat _px_format)
 {
     FlyCapture2::GigEImageSettingsInfo flycap_image_settings_Info;
     FlyCapture2::Mode vModeFC2;
@@ -95,15 +98,15 @@ int BflyCamera::configure(bfly_videoMode _v_mode, bfly_pixelFormat _px_format)
         case MODE4: vModeFC2 = FlyCapture2::MODE_4; break;
         case MODE5: vModeFC2 = FlyCapture2::MODE_5; break;
         default: 
-                std::cout << "BflyCamera::configure(): Unknown video mode" << std::endl; 
-                return BFLY_ERROR;
+                std::cout << "BflyCamera::Device::configure() ERROR: Unknown video mode" << std::endl; 
+                return ERROR;
                 break;
     }
     flycap_error_ = flycap_camera_.SetGigEImagingMode( vModeFC2 );
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
         flycap_error_.PrintErrorTrace();
-        return BFLY_ERROR;
+        return ERROR;
     }
 
     //set pixel format and image size to maximum allowed
@@ -111,7 +114,7 @@ int BflyCamera::configure(bfly_videoMode _v_mode, bfly_pixelFormat _px_format)
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
         flycap_error_.PrintErrorTrace();
-        return BFLY_ERROR;
+        return ERROR;
     }
     flycap_image_settings_.offsetX = 0;
     flycap_image_settings_.offsetY = 0;
@@ -122,51 +125,51 @@ int BflyCamera::configure(bfly_videoMode _v_mode, bfly_pixelFormat _px_format)
         case MONO8: flycap_image_settings_.pixelFormat = FlyCapture2::PIXEL_FORMAT_MONO8; break;
         case RGB8: flycap_image_settings_.pixelFormat = FlyCapture2::PIXEL_FORMAT_RGB8; break;
         default:
-                std::cout << "BflyCamera::configure(): Unknown pixel format: " << _px_format << std::endl;
-                return BFLY_ERROR;
+                std::cout << "BflyCamera::Device::configure() ERROR: Unknown pixel format: " << _px_format << std::endl;
+                return ERROR;
                 break;
     }
     flycap_error_ = flycap_camera_.SetGigEImageSettings( &flycap_image_settings_ );
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
         flycap_error_.PrintErrorTrace();
-        return BFLY_ERROR;
+        return ERROR;
     }
         
     //return SUCCESS
-    return BFLY_SUCCESS;
+    return SUCCESS;
 }
 
-int BflyCamera::configure(unsigned int _stream_ch)
+int Device::configure(unsigned int _stream_ch)
 {
       
 }
 
-int BflyCamera::startAcquisition()
+int Device::startAcquisition()
 {
     flycap_error_ = flycap_camera_.StartCapture(); // Start capturing images
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
         flycap_error_.PrintErrorTrace();
-        return BFLY_ERROR;
+        return ERROR;
     }
-    std::cout << "Start Image Acquisition" << std::endl;
-    return BFLY_SUCCESS;
+    std::cout << "BflyCamera::Device: Start Image Acquisition" << std::endl;
+    return SUCCESS;
 }
 
-int BflyCamera::stopAcquisition()
+int Device::stopAcquisition()
 {
     flycap_error_ = flycap_camera_.StopCapture();// Stop capturing images
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
         flycap_error_.PrintErrorTrace();
-        return BFLY_ERROR;
+        return ERROR;
     }
-    std::cout << "Stop Image Acquisition" << std::endl;
-    return BFLY_SUCCESS;
+    std::cout << "BflyCamera::Device: Stop Image Acquisition" << std::endl;
+    return SUCCESS;
 }
 
-double BflyCamera::getFrameRate()
+double Device::getFrameRate()
 {
     FlyCapture2::Property frameRate;
     
@@ -175,19 +178,19 @@ double BflyCamera::getFrameRate()
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
         flycap_error_.PrintErrorTrace();
-        return BFLY_ERROR;
+        return ERROR;
     }
     return frameRate.absValue;
 }
 
-int BflyCamera::getCurrentImage(cv::Mat & _img)
+int Device::getCurrentImage(cv::Mat & _img)
 {
     //Gets current camera buffer image
     flycap_error_ = flycap_camera_.RetrieveBuffer( &flycap_image_ );
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
         flycap_error_.PrintErrorTrace();
-        return BFLY_ERROR;
+        return ERROR;
     }
     
     //do conversion from FlyCapture2::Image to cv::Mat      
@@ -205,10 +208,10 @@ int BflyCamera::getCurrentImage(cv::Mat & _img)
     _img = opencv_image_.clone();
     
     //return success
-    return BFLY_SUCCESS;
+    return SUCCESS;
 }
 
-void BflyCamera::printCameraInfo()
+void Device::printCameraInfo()
 {
     // Get the camera information
     FlyCapture2::CameraInfo info;
@@ -221,25 +224,29 @@ void BflyCamera::printCameraInfo()
     else
     {
         std::cout << std::endl
-            << "******** CAMERA INFORMATION ********" << std::endl
-            << "Camera vendor - " << info.vendorName << std::endl
-            << "Camera model - " << info.modelName << std::endl
-            << "Serial number - " << info.serialNumber << std::endl
-            << "Sensor - " << info.sensorInfo << std::endl
-            << "Resolution - " << info.sensorResolution << std::endl
-            << "Firmware version - " << info.firmwareVersion << std::endl
-            << "Firmware build time - " << info.firmwareBuildTime << std::endl
-            << "GigE version - " << info.gigEMajorVersion << "." << info.gigEMinorVersion << std::endl
-            << "IP Address - " << (unsigned int)info.ipAddress.octets[0] << "." << (unsigned int)info.ipAddress.octets[1] << "." << (unsigned int)info.ipAddress.octets[2] << "." << (unsigned int)info.ipAddress.octets[3] << std::endl << std::endl;
+            << "******** BflyCamera::Device: CAMERA INFORMATION ********" << std::endl
+            << "\tCamera vendor - " << info.vendorName << std::endl
+            << "\tCamera model - " << info.modelName << std::endl
+            << "\tSerial number - " << info.serialNumber << std::endl
+            << "\tSensor - " << info.sensorInfo << std::endl
+            << "\tResolution - " << info.sensorResolution << std::endl
+            << "\tFirmware version - " << info.firmwareVersion << std::endl
+            << "\tFirmware build time - " << info.firmwareBuildTime << std::endl
+            << "\tGigE version - " << info.gigEMajorVersion << "." << info.gigEMinorVersion << std::endl
+            << "\tIP Address - " << (unsigned int)info.ipAddress.octets[0] << "." << (unsigned int)info.ipAddress.octets[1] << "." << (unsigned int)info.ipAddress.octets[2] << "." << (unsigned int)info.ipAddress.octets[3] << std::endl << std::endl;
     }
 }
 
-void BflyCamera::printImageInfo() const
+void Device::printImageInfo() const
 {
-    std::cout   << "  Image Rows: " << flycap_image_.GetRows() << std::endl
-        << "  Image Cols: " << flycap_image_.GetCols() << std::endl
-        << "  Image Stride: " << flycap_image_.GetStride() << std::endl
-        << "  Image BitsPerPixel: " << flycap_image_.GetBitsPerPixel() << std::endl
-        << "  Image DataSize (Bytes): " << flycap_image_.GetDataSize() << std::endl
+    std::cout << "******** BflyCamera::Device: IMAGE INFORMATION ********" << std::endl   
+        << "\tImage Rows: " << flycap_image_.GetRows() << std::endl
+        << "\tImage Cols: " << flycap_image_.GetCols() << std::endl
+        << "\tImage Stride: " << flycap_image_.GetStride() << std::endl
+        << "\tImage BitsPerPixel: " << flycap_image_.GetBitsPerPixel() << std::endl
+        << "\tImage DataSize (Bytes): " << flycap_image_.GetDataSize() << std::endl
         << std::endl;
 }
+
+}//end of namespace
+

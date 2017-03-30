@@ -35,7 +35,7 @@ class BflyCameraNode
 {
     protected:                    
         //Device object with HW API
-        BflyCamera *camera_;
+        BflyCamera::Device *camera_;
         
         //ros node handle
         ros::NodeHandle nh_;

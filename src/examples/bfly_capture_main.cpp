@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
       unsigned int ii;
       int retV = 0; 
       unsigned int numImages;
-      bfly_videoMode vMode;
-      bfly_pixelFormat pxFormat;
+      BflyCamera::bfly_videoMode vMode;
+      BflyCamera::bfly_pixelFormat pxFormat;
       bool saveFrames;
       std::string folderName;
       std::ostringstream fullFileName;
@@ -42,24 +42,24 @@ int main(int argc, char *argv[])
       {
             std::cout  << "EXIT due to missing or too many parameters" << std::endl;
             printUsage();
-            return BFLY_ERROR;
+            return BflyCamera::ERROR;
       }
       
       //get user entries
       numImages = atoi(argv[1]);
-      vMode = (bfly_videoMode)atoi(argv[2]);
+      vMode = (BflyCamera::bfly_videoMode)atoi(argv[2]);
       if ( (vMode < 0) || (vMode == 2) || (vMode == 3) || (vMode > 5) )
       {
             std::cout << "EXIT due to unavailable Video Mode." << std::endl;                  
             printUsage();
-            return BFLY_ERROR;
+            return BflyCamera::ERROR;
       }
-      pxFormat = (bfly_pixelFormat)atoi(argv[3]);
+      pxFormat = (BflyCamera::bfly_pixelFormat)atoi(argv[3]);
       if ( (pxFormat < 0) || (pxFormat > 1) )
       {
             std::cout << "EXIT due to unavailable Pixel Format." << std::endl;                  
             printUsage();
-            return BFLY_ERROR;
+            return BflyCamera::ERROR;
       }
       if (argc == 5) //if optional argument is provided (folder name where frames will be saved)
       {
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
       else std::cout << "  Folder not provided. Frames will not be saved" << std::endl;
             
       //create camera and image objects
-      BflyCamera camera;
+      BflyCamera::Device camera;
       cv::Mat img;
                  
       //check if camera object has been built correctly. It mainly checks if there is a camera available
@@ -94,14 +94,14 @@ int main(int argc, char *argv[])
             retV += camera.open();
             retV += camera.configure(vMode, pxFormat);
             camera.printCameraInfo();
-            if (retV != 2*BFLY_SUCCESS) return BFLY_ERROR;
+            if (retV != 2*BflyCamera::SUCCESS) return BflyCamera::ERROR;
             
             //set OpenCV Window
             cv::namedWindow("rawImage", CV_WINDOW_AUTOSIZE);
             cv::moveWindow("rawImage",50,50);
                         
             //starts acquisition
-            if ( camera.startAcquisition() == BFLY_ERROR ) return BFLY_ERROR;
+            if ( camera.startAcquisition() == BflyCamera::ERROR ) return BflyCamera::ERROR;
             
             //acquisition loop            
             for (ii=0; ii<numImages; ii++)
@@ -141,5 +141,5 @@ int main(int argc, char *argv[])
             camera.close();
       }
       
-      return BFLY_SUCCESS;
+      return BflyCamera::SUCCESS;
 }
