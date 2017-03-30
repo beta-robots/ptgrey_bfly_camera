@@ -4,10 +4,17 @@ BflyCameraNode::BflyCameraNode() :
     nh_(ros::this_node::getName()), 
     image_tp_(nh_)
 {
-    //Set node parameters //TODO: get them from yaml file
-    run_mode_ = SERVER; 
-    rate_ = 1; 
-    camera_frame_name_ = "ptgrey_bfly_camera";
+    //local vars
+    BflyCamera::videoMode video_mode; 
+    BflyCamera::pixelFormat pixel_format; 
+    int param_int; 
+    
+    //Configure node according yaml params
+    nh_.getParam("run_mode", param_int); this->run_mode_ = (RunMode)param_int; 
+    nh_.getParam("rate", this->rate_);
+    nh_.getParam("frame_name", this->camera_frame_name_);
+    nh_.getParam("video_mode", param_int); video_mode = (BflyCamera::videoMode)param_int;
+    nh_.getParam("pixel_format", param_int); pixel_format = (BflyCamera::pixelFormat)param_int;
     
     //init the image publisher
     image_publisher_ = image_tp_.advertise("bfly_raw_image", 1);
@@ -25,8 +32,8 @@ BflyCameraNode::BflyCameraNode() :
         return;        
     }
     
-    //configure image acquisition
-    if ( camera_->configure(BflyCamera::MODE0,BflyCamera::MONO8) == BflyCamera::ERROR )
+    //configure image acquisition according yaml inputs
+    if ( camera_->configure(video_mode,pixel_format) == BflyCamera::ERROR )
     {
         std::cout << "BflyCameraNode::BflyCameraNode(): Error configuring the camera" << std::endl;
         return;        
@@ -69,7 +76,21 @@ void BflyCameraNode::publish()
     image_.header.seq ++;
     image_.header.stamp = ts;
     image_.header.frame_id = camera_frame_name_; 
-    image_.encoding = sensor_msgs::image_encodings::MONO8;
+    BflyCamera::pixelFormat pxf = camera_->getPixelFormat();
+    switch (pxf)
+    {
+        case BflyCamera::MONO8:
+            image_.encoding = sensor_msgs::image_encodings::MONO8;
+            break;
+
+        case BflyCamera::RGB8:
+            image_.encoding = sensor_msgs::image_encodings::RGB8;
+            break;
+
+        default: 
+            image_.encoding = sensor_msgs::image_encodings::MONO8;
+            break;            
+    }
     
     //publish the image    
     image_publisher_.publish(image_.toImageMsg());        

@@ -32,6 +32,10 @@ and from your ROS workspace, build it with:
 $ catkin_make --only-pkg-with-deps ptgrey_bfly_camera
 ```
 
+### Camera Configuration
+Edit the .yaml file at config/ folder with the required parameters. 
+
+
 ### Camera Operation
 Execute the flycap tool to configure the IP of your camera
 ```shell

@@ -1,0 +1,18 @@
+
+#*************** ptgrey_bfly_camera node and capture parameters ************************
+
+#run mode: run mode: 0->SERVER, 1->PUBLISHER
+run_mode: 0
+
+#In case of PUBLISHER, the rate in hz. 
+#Video mode and pixel format may condition the final rate
+rate: 10
+
+#frame name of the camera
+frame_name: "ptgrey_bfly_camera"
+
+#Video Mode (image size). Check camera documentation. 
+video_mode: 0
+
+#Pixel Format: 0->MONO8, 1->RGB8.
+pixel_format: 0

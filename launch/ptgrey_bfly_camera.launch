@@ -6,7 +6,7 @@
 
     <!-- User Args  -->
     <arg name="rviz" default="true" doc="rviz visualization or not"/>
-<!--     <arg name="config_file" default="$(find ensenso_nx)/config/ensenso_nx_params.yaml" doc="YAML file with configutaion parameters"/> -->
+    <arg name="config_file" default="$(find ptgrey_bfly_camera)/config/ptgrey_bfly_camera_params.yaml" doc="YAML file with configutaion parameters"/>
     
     <!-- ensenso_nx node -->
     <node   
@@ -14,7 +14,7 @@
         type="ptgrey_bfly_camera"
         name="ptgrey_bfly_camera"
         output="screen">
-<!--         <rosparam command="load" file="$(arg config_file)"/> -->
+        <rosparam command="load" file="$(arg config_file)"/>
     </node>      
     
     <!--visualization-->

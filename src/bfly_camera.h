@@ -15,8 +15,8 @@ const int ERROR = -1;
 const int SUCCESS = 1;
 
 //enums
-enum bfly_videoMode {MODE0 = 0, MODE1, MODE2, MODE3, MODE4, MODE5};
-enum bfly_pixelFormat {MONO8 = 0, RGB8};
+enum videoMode {MODE0 = 0, MODE1, MODE2, MODE3, MODE4, MODE5};
+enum pixelFormat {MONO8 = 0, RGB8};
 
 
 /** \brief Class for openCV image acquisition from BlackFly Point Grey camera
@@ -41,12 +41,13 @@ class Device
             bool isInitOk() const;
             int open();
             int close();
-            int configure(bfly_videoMode _v_mode, bfly_pixelFormat _px_format);
+            int configure(videoMode _v_mode, pixelFormat _px_format);
             int configure(unsigned int _stream_ch);
             int startAcquisition();
             int stopAcquisition();
             double getFrameRate();
             int getCurrentImage(cv::Mat & _img);
+            pixelFormat getPixelFormat() const; 
             void printCameraInfo();
             void printImageInfo() const;
 };//end class

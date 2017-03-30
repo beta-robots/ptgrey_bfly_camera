@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
       unsigned int ii;
       int retV = 0; 
       unsigned int numImages;
-      BflyCamera::bfly_videoMode vMode;
-      BflyCamera::bfly_pixelFormat pxFormat;
+      BflyCamera::videoMode vMode;
+      BflyCamera::pixelFormat pxFormat;
       bool saveFrames;
       std::string folderName;
       std::ostringstream fullFileName;
@@ -47,14 +47,14 @@ int main(int argc, char *argv[])
       
       //get user entries
       numImages = atoi(argv[1]);
-      vMode = (BflyCamera::bfly_videoMode)atoi(argv[2]);
+      vMode = (BflyCamera::videoMode)atoi(argv[2]);
       if ( (vMode < 0) || (vMode == 2) || (vMode == 3) || (vMode > 5) )
       {
             std::cout << "EXIT due to unavailable Video Mode." << std::endl;                  
             printUsage();
             return BflyCamera::ERROR;
       }
-      pxFormat = (BflyCamera::bfly_pixelFormat)atoi(argv[3]);
+      pxFormat = (BflyCamera::pixelFormat)atoi(argv[3]);
       if ( (pxFormat < 0) || (pxFormat > 1) )
       {
             std::cout << "EXIT due to unavailable Pixel Format." << std::endl;                  

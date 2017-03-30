@@ -73,7 +73,7 @@ add_service_files(FILES ImageAsService.srv)
 generate_messages(DEPENDENCIES std_msgs)
 
 # dynamic reconfigure cfg file
-# generate_dynamic_reconfigure_options(cfg/bfly_camera_params.cfg)
+generate_dynamic_reconfigure_options(cfg/ptgrey_bfly_camera_params.cfg)
 
 ## The catkin_package macro generates cmake config files for your package
 catkin_package(

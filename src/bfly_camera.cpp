@@ -85,7 +85,7 @@ int Device::close()
     return SUCCESS;    
 }
 
-int Device::configure(bfly_videoMode _v_mode, bfly_pixelFormat _px_format)
+int Device::configure(videoMode _v_mode, pixelFormat _px_format)
 {
     FlyCapture2::GigEImageSettingsInfo flycap_image_settings_Info;
     FlyCapture2::Mode vModeFC2;
@@ -209,6 +209,25 @@ int Device::getCurrentImage(cv::Mat & _img)
     
     //return success
     return SUCCESS;
+}
+
+pixelFormat Device::getPixelFormat() const
+{
+    int pxFormat = flycap_image_settings_.pixelFormat; 
+    switch( pxFormat)
+    {
+        case FlyCapture2::PIXEL_FORMAT_MONO8:
+            return MONO8;
+            break;
+            
+        case FlyCapture2::PIXEL_FORMAT_RGB8:
+            return RGB8;
+            break;
+
+        default:
+            return MONO8; //TODO
+            break;       
+    }
 }
 
 void Device::printCameraInfo()
