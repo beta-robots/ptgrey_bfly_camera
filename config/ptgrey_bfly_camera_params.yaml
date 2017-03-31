@@ -11,6 +11,9 @@ rate: 10
 #frame name of the camera
 frame_name: "ptgrey_bfly_camera"
 
+#frame name of the camera
+camera_info_file: "/home/andreu/dev/ptgrey_bfly_camera/calibration/bfly_1.yaml"
+
 #Video Mode (image size). Check camera documentation. 
 video_mode: 0
 
