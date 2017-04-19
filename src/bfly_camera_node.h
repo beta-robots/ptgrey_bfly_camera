@@ -63,10 +63,11 @@ class BflyCameraNode
         std::string camera_frame_name_; //name of the camera frame of reference
         std::string camera_info_file_; //name of the camera info file. Where calibration data is stored
         
-        //Calibration data. Get from a yaml file
+        //Calibration data and yaml file to store it
         cv::Mat matD;
         cv::Mat matK;
         cv::Mat matP;
+        cv::FileStorage calibration_file_; 
         
     public:
         //constructor
@@ -85,6 +86,9 @@ class BflyCameraNode
         void publish();
                         
     protected: 
+        //sets calibration data from file. Retunrns false if file does not exist
+        bool setCalibrationFromFile();
+        
         //Service callback implementing the image capture
         bool imageServiceCallback(ptgrey_bfly_camera::ImageAsService::Request  & _request, 
                                   ptgrey_bfly_camera::ImageAsService::Response & _reply);
