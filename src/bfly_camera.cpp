@@ -243,7 +243,7 @@ void Device::printCameraInfo()
     else
     {
         std::cout << std::endl
-            << "******** BflyCamera::Device: CAMERA INFORMATION ********" << std::endl
+            << "BflyCamera::Device: CAMERA INFORMATION" << std::endl
             << "\tCamera vendor - " << info.vendorName << std::endl
             << "\tCamera model - " << info.modelName << std::endl
             << "\tSerial number - " << info.serialNumber << std::endl
@@ -258,7 +258,7 @@ void Device::printCameraInfo()
 
 void Device::printImageInfo() const
 {
-    std::cout << "******** BflyCamera::Device: IMAGE INFORMATION ********" << std::endl   
+    std::cout << "BflyCamera::Device: IMAGE INFORMATION" << std::endl   
         << "\tImage Rows: " << flycap_image_.GetRows() << std::endl
         << "\tImage Cols: " << flycap_image_.GetCols() << std::endl
         << "\tImage Stride: " << flycap_image_.GetStride() << std::endl

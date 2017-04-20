@@ -64,9 +64,9 @@ class BflyCameraNode
         std::string camera_info_file_; //name of the camera info file. Where calibration data is stored
         
         //Calibration data and yaml file to store it
-        cv::Mat matD;
-        cv::Mat matK;
-        cv::Mat matP;
+        cv::Mat paramsD;
+        cv::Mat matrixK;
+        cv::Mat matrixP;
         cv::FileStorage calibration_file_; 
         
     public:

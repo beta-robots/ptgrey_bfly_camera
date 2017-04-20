@@ -3,9 +3,9 @@
 BflyCameraNode::BflyCameraNode() :
     nh_(ros::this_node::getName()), 
     image_tp_(nh_), 
-    matD(5,1,CV_64FC1),
-    matK(3,3,CV_64FC1),
-    matP(3,4,CV_64FC1), 
+    paramsD(5,1,CV_64FC1),
+    matrixK(3,3,CV_64FC1),
+    matrixP(3,4,CV_64FC1), 
     calibration_file_()
 {
     //local vars
@@ -37,26 +37,30 @@ BflyCameraNode::BflyCameraNode() :
     //open/connect to the HW device
     if ( camera_->open() == BflyCamera::ERROR )
     {
-        std::cout << "BflyCameraNode::BflyCameraNode(): Error opening the camera" << std::endl;
+        std::cout << "BflyCameraNode::BflyCameraNode(): ERROR opening the camera" << std::endl;
         return;        
     }
     
     //configure image acquisition according yaml inputs
     if ( camera_->configure(video_mode,pixel_format) == BflyCamera::ERROR )
     {
-        std::cout << "BflyCameraNode::BflyCameraNode(): Error configuring the camera" << std::endl;
+        std::cout << "BflyCameraNode::BflyCameraNode(): ERROR configuring the camera" << std::endl;
         return;        
     }
         
     //starts camera image acquisition
     if ( camera_->startAcquisition() == BflyCamera::ERROR )
     {
-        std::cout << "BflyCameraNode::BflyCameraNode(): Error starting image acquisition" << std::endl;
+        std::cout << "BflyCameraNode::BflyCameraNode(): ERROR starting image acquisition" << std::endl;
         return;
     }
     
     //sets calibration data from calibration file
-    if ( !setCalibrationFromFile() )
+    if ( setCalibrationFromFile() )
+    {
+        std::cout << "BflyCameraNode::BflyCameraNode(): Calibration data load from file. camera_info topic will publish these data." << std::endl;
+    }
+    else //some error occurred
     {
         std::cout << "BflyCameraNode::BflyCameraNode(): WARNING! Calibration file not found. camera_info topic will publish incorrect data." << std::endl;
     }
@@ -85,7 +89,7 @@ void BflyCameraNode::publish()
 {
     //Get image data in openCV format
     camera_->getCurrentImage(image_.image);
-    
+
     //Get timestamp and fill the header
     ros::Time ts = ros::Time::now();
     image_.header.seq ++;
@@ -106,27 +110,28 @@ void BflyCameraNode::publish()
             image_.encoding = sensor_msgs::image_encodings::MONO8;
             break;            
     }
-    
+
     //fill the camera info message
     camera_info_msg_.header.seq ++;
     camera_info_msg_.header.stamp = ts;
     camera_info_msg_.header.frame_id = camera_frame_name_; 
     camera_info_msg_.height = image_.image.rows; 
-    camera_info_msg_.width = image_.image.cols; 
+    camera_info_msg_.width = image_.image.cols;     
     camera_info_msg_.distortion_model = "plumb_bob"; 
-    for(unsigned int ii=0; ii<5; ii++) camera_info_msg_.D[ii] = matD.at<double>(ii);
+    camera_info_msg_.D.resize(5); 
+    for(unsigned int ii=0; ii<5; ii++) camera_info_msg_.D[ii] = paramsD.at<double>(ii);
     for(unsigned int ii=0; ii<3; ii++)
-        for(unsigned int jj=0; jj<3; jj++) camera_info_msg_.K[ii*3+jj] = matK.at<double>(ii,jj);
+        for(unsigned int jj=0; jj<3; jj++) camera_info_msg_.K[ii*3+jj] = matrixK.at<double>(ii,jj);
     for(unsigned int ii=0; ii<3; ii++)
-        for(unsigned int jj=0; jj<4; jj++) camera_info_msg_.P[ii*3+jj] = matP.at<double>(ii,jj);        
+        for(unsigned int jj=0; jj<4; jj++) camera_info_msg_.P[ii*3+jj] = matrixP.at<double>(ii,jj);        
     camera_info_msg_.binning_x = 0;
     camera_info_msg_.binning_y = 0;
     camera_info_msg_.roi.width = 0;
     camera_info_msg_.roi.height = 0; 
-        
+
     //publish the image    
     image_publisher_.publish(image_.toImageMsg());        
-    
+
     //publish the camera info
     camera_info_publisher_.publish(camera_info_msg_);
 }
@@ -134,12 +139,13 @@ void BflyCameraNode::publish()
 //seee http://docs.opencv.org/2.4/modules/core/doc/xml_yaml_persistence.html
 bool BflyCameraNode::setCalibrationFromFile()
 {
+    //open calibration data file
     calibration_file_.open(camera_info_file_, cv::FileStorage::READ); 
     if ( calibration_file_.isOpened() )
     {
-        calibration_file_["MatrixD"] >> matD;
-        calibration_file_["MatrixK"] >> matK;
-        calibration_file_["MatrixP"] >> matP;
+        calibration_file_["paramsD"] >> paramsD;
+        calibration_file_["matrixK"] >> matrixK;
+        calibration_file_["matrixP"] >> matrixP;
         calibration_file_.release(); 
         return true; 
     }
@@ -172,34 +178,48 @@ bool BflyCameraNode::SetCameraInfoServiceCallback(
             sensor_msgs::SetCameraInfo::Request  & _request, 
             sensor_msgs::SetCameraInfo::Response & _reply)
 {
+    //Message
+    std::cout << "BflyCameraNode::BflyCameraNode(): Setting new camera info parameters " << std::endl; 
+    
     //open an openCV-yaml file
     calibration_file_.open(camera_info_file_, cv::FileStorage::WRITE); 
     if ( ! calibration_file_.isOpened() )
     {
-        std::cout << "BflyCameraNode::BflyCameraNode(): Error opening file to store calibration data: " << camera_info_file_ << " not found." << std::endl;
+        std::cout << "BflyCameraNode::BflyCameraNode(): ERROR opening file to store calibration data: " << camera_info_file_ << " not found." << std::endl;
         _reply.success = false; 
         _reply.status_message = -1; 
         return false;
     }
     
-    //Fill the file with message content
+    //check distortion model. Only plumb_bob implemented with 5 parameters
+    if ( _request.camera_info.distortion_model != "plumb_bob")
+    {
+        std::cout << "BflyCameraNode::BflyCameraNode(): ERROR, only plumb_bob distortion model allowed (5 parameters)" << std::endl;
+        _reply.success = false; 
+        _reply.status_message = -1; 
+        return false;        
+    }
+    
+    //Set class member data
+    paramsD = (cv::Mat_<double>(5,1) << _request.camera_info.D[0],
+                                        _request.camera_info.D[1],
+                                        _request.camera_info.D[2],
+                                        _request.camera_info.D[3],
+                                        _request.camera_info.D[4]);
+    matrixK = (cv::Mat_<double>(3,3) << _request.camera_info.K[0],_request.camera_info.K[1],_request.camera_info.K[2],
+                                        _request.camera_info.K[3],_request.camera_info.K[4],_request.camera_info.K[5],    
+                                        _request.camera_info.K[6],_request.camera_info.K[7],_request.camera_info.K[8]);
+    matrixP = (cv::Mat_<double>(3,4) << _request.camera_info.P[0],_request.camera_info.P[1],_request.camera_info.P[2],_request.camera_info.P[3],
+                                        _request.camera_info.P[4],_request.camera_info.P[5],_request.camera_info.P[6],_request.camera_info.P[7],
+                                        _request.camera_info.P[8],_request.camera_info.P[9],_request.camera_info.P[10],_request.camera_info.P[11]);
+        
+    //Fill the calibration file
     time_t raw_time; 
     time(&raw_time);
-    calibration_file_ << "date" << asctime(localtime(&raw_time));    
-    matD = (cv::Mat_<double>(5,1) << _request.camera_info.D[0],
-                                     _request.camera_info.D[1],
-                                     _request.camera_info.D[2],
-                                     _request.camera_info.D[3],
-                                     _request.camera_info.D[4]);
-    calibration_file_ << "paramsD" << matD;
-    matK = (cv::Mat_<double>(3,3) << _request.camera_info.K[0],_request.camera_info.K[1],_request.camera_info.K[2],
-                                     _request.camera_info.K[3],_request.camera_info.K[4],_request.camera_info.K[5],    
-                                     _request.camera_info.K[6],_request.camera_info.K[7],_request.camera_info.K[8]);
-    calibration_file_ << "matrixK" << matK;
-    matP = (cv::Mat_<double>(3,4) << _request.camera_info.R[0],_request.camera_info.R[1],_request.camera_info.R[2],_request.camera_info.R[3],
-                                     _request.camera_info.R[4],_request.camera_info.R[5],_request.camera_info.R[6],_request.camera_info.R[7],
-                                     _request.camera_info.R[8],_request.camera_info.R[9],_request.camera_info.R[10],_request.camera_info.R[11]);
-    calibration_file_ << "matrixP" << matP;
+    calibration_file_ << "date" << asctime(localtime(&raw_time));   
+    calibration_file_ << "paramsD" << paramsD;
+    calibration_file_ << "matrixK" << matrixK;
+    calibration_file_ << "matrixP" << matrixP;
     
     //save the file
     calibration_file_.release();
