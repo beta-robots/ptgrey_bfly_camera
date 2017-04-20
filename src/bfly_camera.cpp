@@ -230,7 +230,7 @@ pixelFormat Device::getPixelFormat() const
     }
 }
 
-void Device::printCameraInfo()
+void Device::printDeviceInfo()
 {
     // Get the camera information
     FlyCapture2::CameraInfo info;
@@ -243,7 +243,7 @@ void Device::printCameraInfo()
     else
     {
         std::cout << std::endl
-            << "BflyCamera::Device: CAMERA INFORMATION" << std::endl
+            << "BflyCamera::Device: DEVICE INFORMATION" << std::endl
             << "\tCamera vendor - " << info.vendorName << std::endl
             << "\tCamera model - " << info.modelName << std::endl
             << "\tSerial number - " << info.serialNumber << std::endl

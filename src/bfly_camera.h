@@ -48,7 +48,7 @@ class Device
             double getFrameRate();
             int getCurrentImage(cv::Mat & _img);
             pixelFormat getPixelFormat() const; 
-            void printCameraInfo();
+            void printDeviceInfo();
             void printImageInfo() const;
 };//end class
 

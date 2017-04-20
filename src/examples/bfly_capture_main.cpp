@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
             //opens & configures camera
             retV += camera.open();
             retV += camera.configure(vMode, pxFormat);
-            camera.printCameraInfo();
+            camera.printDeviceInfo();
             if (retV != 2*BflyCamera::SUCCESS) return BflyCamera::ERROR;
             
             //set OpenCV Window

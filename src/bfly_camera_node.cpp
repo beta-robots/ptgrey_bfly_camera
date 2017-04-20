@@ -66,7 +66,7 @@ BflyCameraNode::BflyCameraNode() :
     }
     
     //print camera info
-    camera_->printCameraInfo();
+    camera_->printDeviceInfo();
 }
         
 BflyCameraNode::~BflyCameraNode()
