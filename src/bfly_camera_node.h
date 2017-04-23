@@ -16,9 +16,10 @@
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/SetCameraInfo.h>
 #include <ros/package.h>
+#include <sensor_msgs/SnapshotImage.h> //forked at https://github.com/beta-robots
 
 //custom ROS dependencies
-#include "ptgrey_bfly_camera/ImageAsService.h" //custom "capture" service
+// #include "ptgrey_bfly_camera/ImageAsService.h" //custom "capture" service
 
 //enum run mode
 enum RunMode {SERVER=0,PUBLISHER};
@@ -91,8 +92,10 @@ class BflyCameraNode
         bool setCalibrationFromFile();
         
         //Service callback implementing the image capture
-        bool imageServiceCallback(ptgrey_bfly_camera::ImageAsService::Request  & _request, 
-                                  ptgrey_bfly_camera::ImageAsService::Response & _reply);
+//         bool imageServiceCallback(ptgrey_bfly_camera::ImageAsService::Request  & _request, 
+//                                   ptgrey_bfly_camera::ImageAsService::Response & _reply);
+        bool imageServiceCallback(sensor_msgs::SnapshotImage::Request  & _request, 
+                                  sensor_msgs::SnapshotImage::Response & _reply);
         
         //Service to set the camera info data. Stores data in a yaml file
         bool SetCameraInfoServiceCallback(sensor_msgs::SetCameraInfo::Request  & _request, 
