@@ -12,6 +12,8 @@ BflyCameraNode::BflyCameraNode() :
     BflyCamera::videoMode video_mode; 
     BflyCamera::pixelFormat pixel_format; 
     int param_int; 
+    std::ostringstream sstream; 
+    std::string package_path;
     
     //Configure node according yaml params
     nh_.getParam("run_mode", param_int); this->run_mode_ = (RunMode)param_int; 
@@ -20,6 +22,11 @@ BflyCameraNode::BflyCameraNode() :
     nh_.getParam("camera_info_file", this->camera_info_file_);
     nh_.getParam("video_mode", param_int); video_mode = (BflyCamera::videoMode)param_int;
     nh_.getParam("pixel_format", param_int); pixel_format = (BflyCamera::pixelFormat)param_int;
+    
+    //build calibration full file name
+    package_path = ros::package::getPath("ptgrey_bfly_camera");
+    sstream << package_path << "/calibration/" << camera_info_file_;
+    camera_info_file_ = sstream.str();
     
     //init the image publisher
     image_publisher_ = image_tp_.advertise("image_raw", 1);
@@ -123,11 +130,15 @@ void BflyCameraNode::publish()
     for(unsigned int ii=0; ii<3; ii++)
         for(unsigned int jj=0; jj<3; jj++) camera_info_msg_.K[ii*3+jj] = matrixK.at<double>(ii,jj);
     for(unsigned int ii=0; ii<3; ii++)
-        for(unsigned int jj=0; jj<4; jj++) camera_info_msg_.P[ii*3+jj] = matrixP.at<double>(ii,jj);        
-    camera_info_msg_.binning_x = 0;
-    camera_info_msg_.binning_y = 0;
+        for(unsigned int jj=0; jj<4; jj++) camera_info_msg_.P[ii*4+jj] = matrixP.at<double>(ii,jj);        
+    camera_info_msg_.R[0] = 1.; //R is the identity (no rotation)
+    camera_info_msg_.R[4] = 1.; //R is the identity (no rotation)
+    camera_info_msg_.R[8] = 1.; //R is the identity (no rotation)
+    camera_info_msg_.binning_x = 1;
+    camera_info_msg_.binning_y = 1;
     camera_info_msg_.roi.width = 0;
     camera_info_msg_.roi.height = 0; 
+    camera_info_msg_.roi.do_rectify = false; 
 
     //publish the image    
     image_publisher_.publish(image_.toImageMsg());        

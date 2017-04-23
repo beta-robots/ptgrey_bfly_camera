@@ -122,12 +122,16 @@ int Device::configure(videoMode _v_mode, pixelFormat _px_format)
     flycap_image_settings_.width = flycap_image_settings_Info.maxWidth;
     switch (_px_format)
     {
-        case MONO8: flycap_image_settings_.pixelFormat = FlyCapture2::PIXEL_FORMAT_MONO8; break;
-        case RGB8: flycap_image_settings_.pixelFormat = FlyCapture2::PIXEL_FORMAT_RGB8; break;
+        case MONO8: 
+            flycap_image_settings_.pixelFormat = FlyCapture2::PIXEL_FORMAT_MONO8; 
+            break;
+        case RGB8: 
+            flycap_image_settings_.pixelFormat = FlyCapture2::PIXEL_FORMAT_RGB8; 
+            break;
         default:
-                std::cout << "BflyCamera::Device::configure() ERROR: Unknown pixel format: " << _px_format << std::endl;
-                return ERROR;
-                break;
+            std::cout << "BflyCamera::Device::configure() ERROR: Unknown pixel format: " << _px_format << std::endl;
+            return ERROR;
+            break;
     }
     flycap_error_ = flycap_camera_.SetGigEImageSettings( &flycap_image_settings_ );
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
@@ -213,7 +217,7 @@ int Device::getCurrentImage(cv::Mat & _img)
 
 pixelFormat Device::getPixelFormat() const
 {
-    int pxFormat = flycap_image_settings_.pixelFormat; 
+    unsigned int pxFormat = flycap_image_settings_.pixelFormat; 
     switch( pxFormat)
     {
         case FlyCapture2::PIXEL_FORMAT_MONO8:

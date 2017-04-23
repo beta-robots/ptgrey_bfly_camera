@@ -8,7 +8,7 @@
     <arg name="rviz" default="true" doc="rviz visualization or not"/>
     <arg name="config_file" default="$(find ptgrey_bfly_camera)/config/ptgrey_bfly_camera_params.yaml" doc="YAML file with configutaion parameters"/>
     
-    <!-- ensenso_nx node -->
+    <!-- Black fly camera node -->
     <node   
         pkg="ptgrey_bfly_camera"
         type="ptgrey_bfly_camera"

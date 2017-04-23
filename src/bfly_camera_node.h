@@ -3,6 +3,7 @@
 
 //std
 #include <iostream>
+#include <sstream>
 
 //this package
 #include "bfly_camera.h"
@@ -14,10 +15,10 @@
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/SetCameraInfo.h>
+#include <ros/package.h>
 
 //custom ROS dependencies
 #include "ptgrey_bfly_camera/ImageAsService.h" //custom "capture" service
-// #include <ensenso_nx/ensenso_nx_paramsConfig.h> //ROS dynamic configure
 
 //enum run mode
 enum RunMode {SERVER=0,PUBLISHER};
