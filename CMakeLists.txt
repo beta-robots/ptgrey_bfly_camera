@@ -46,6 +46,7 @@ find_package(
         sensor_msgs 
         image_transport 
         cv_bridge
+        image_geometry
 )
 INCLUDE_DIRECTORIES(src/ ${catkin_INCLUDE_DIRS})
 
@@ -85,7 +86,8 @@ catkin_package(
         std_msgs
         sensor_msgs
         image_transport 
-        cv_bridge        
+        cv_bridge
+        image_geometry
 )
 
 # Build library, linked with Point Grey's SDK

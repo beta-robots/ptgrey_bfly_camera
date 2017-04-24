@@ -26,7 +26,7 @@ int main(int argc, char **argv)
                 //execute pending callbacks
                 ros::spinOnce(); 
                     
-                //just publish the cloud
+                //just publish the image and camera info message
                 bfly.publish(); 
                     
                 //relax to fit output rate
