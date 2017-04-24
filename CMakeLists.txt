@@ -40,7 +40,7 @@ find_package(
     COMPONENTS 
         roscpp 
         rospy 
-        genmsg
+#         genmsg
         dynamic_reconfigure 
         std_msgs
         sensor_msgs 
@@ -70,8 +70,8 @@ SET(SRCS_NODE
 )
  
 # Generate added messages and services
-add_service_files(FILES ImageAsService.srv)
-generate_messages(DEPENDENCIES std_msgs)
+# add_service_files(FILES ImageAsService.srv)
+# generate_messages(DEPENDENCIES std_msgs)
 
 # dynamic reconfigure cfg file
 generate_dynamic_reconfigure_options(cfg/ptgrey_bfly_camera_params.cfg)
@@ -81,7 +81,7 @@ catkin_package(
     CATKIN_DEPENDS 
         roscpp 
         rospy 
-        genmsg
+#         genmsg
         dynamic_reconfigure 
         std_msgs
         sensor_msgs
