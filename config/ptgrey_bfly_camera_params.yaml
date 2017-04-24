@@ -2,7 +2,7 @@
 #*************** ptgrey_bfly_camera node and capture parameters ************************
 
 #run mode: run mode: 0->SERVER, 1->PUBLISHER
-run_mode: 1
+run_mode: 0
 
 #In case of PUBLISHER, the rate in hz. 
 #Video mode and pixel format may condition the final rate
