@@ -12,6 +12,8 @@ BflyCameraNode::BflyCameraNode() :
     BflyCamera::videoMode video_mode; 
     BflyCamera::pixelFormat pixel_format; 
     int param_int; 
+    std::ostringstream sstream; 
+    std::string package_path;
     
     //Configure node according yaml params
     nh_.getParam("run_mode", param_int); this->run_mode_ = (RunMode)param_int; 
@@ -20,6 +22,11 @@ BflyCameraNode::BflyCameraNode() :
     nh_.getParam("camera_info_file", this->camera_info_file_);
     nh_.getParam("video_mode", param_int); video_mode = (BflyCamera::videoMode)param_int;
     nh_.getParam("pixel_format", param_int); pixel_format = (BflyCamera::pixelFormat)param_int;
+    
+    //build calibration full file name
+    package_path = ros::package::getPath("ptgrey_bfly_camera");
+    sstream << package_path << "/calibration/" << camera_info_file_;
+    camera_info_file_ = sstream.str();
     
     //init the image publisher
     image_publisher_ = image_tp_.advertise("image_raw", 1);
@@ -123,11 +130,15 @@ void BflyCameraNode::publish()
     for(unsigned int ii=0; ii<3; ii++)
         for(unsigned int jj=0; jj<3; jj++) camera_info_msg_.K[ii*3+jj] = matrixK.at<double>(ii,jj);
     for(unsigned int ii=0; ii<3; ii++)
-        for(unsigned int jj=0; jj<4; jj++) camera_info_msg_.P[ii*3+jj] = matrixP.at<double>(ii,jj);        
-    camera_info_msg_.binning_x = 0;
-    camera_info_msg_.binning_y = 0;
+        for(unsigned int jj=0; jj<4; jj++) camera_info_msg_.P[ii*4+jj] = matrixP.at<double>(ii,jj);        
+    camera_info_msg_.R[0] = 1.; //R is the identity (no rotation)
+    camera_info_msg_.R[4] = 1.; //R is the identity (no rotation)
+    camera_info_msg_.R[8] = 1.; //R is the identity (no rotation)
+    camera_info_msg_.binning_x = 1;
+    camera_info_msg_.binning_y = 1;
     camera_info_msg_.roi.width = 0;
     camera_info_msg_.roi.height = 0; 
+    camera_info_msg_.roi.do_rectify = false; 
 
     //publish the image    
     image_publisher_.publish(image_.toImageMsg());        
@@ -156,20 +167,59 @@ bool BflyCameraNode::setCalibrationFromFile()
     }
 }
 
-bool BflyCameraNode::imageServiceCallback(
-            ptgrey_bfly_camera::ImageAsService::Request  & _request, 
-            ptgrey_bfly_camera::ImageAsService::Response & _reply)
+// bool BflyCameraNode::imageServiceCallback(
+//             ptgrey_bfly_camera::ImageAsService::Request  & _request, 
+//             ptgrey_bfly_camera::ImageAsService::Response & _reply)
+bool BflyCameraNode::imageServiceCallback(sensor_msgs::SnapshotImage::Request  & _request, 
+                                          sensor_msgs::SnapshotImage::Response & _reply)
 {
-    //publish images
-    for (unsigned int ii=0; ii< _request.num_images; ii++)
-    {        
-        this->publish();
+    //Get image data in openCV format
+    camera_->getCurrentImage(image_.image);
+    
+    //set image response
+    ros::Time ts = ros::Time::now();
+    image_.header.seq ++;
+    image_.header.stamp = ts;
+    image_.header.frame_id = camera_frame_name_; 
+    BflyCamera::pixelFormat pxf = camera_->getPixelFormat();
+    switch (pxf)
+    {
+        case BflyCamera::MONO8:
+            image_.encoding = sensor_msgs::image_encodings::MONO8;
+            break;
+
+        case BflyCamera::RGB8:
+            image_.encoding = sensor_msgs::image_encodings::RGB8;
+            break;
+
+        default: 
+            image_.encoding = sensor_msgs::image_encodings::MONO8;
+            break;            
     }
-    
-    //set the reply
-    _reply.width = image_.image.cols; 
-    _reply.height = image_.image.rows; 
-    
+    image_.toImageMsg(_reply.image); 
+
+    //set camera info response
+    _reply.camera_info.header.seq ++;
+    _reply.camera_info.header.stamp = ts;
+    _reply.camera_info.header.frame_id = camera_frame_name_; 
+    _reply.camera_info.height = image_.image.rows; 
+    _reply.camera_info.width = image_.image.cols;     
+    _reply.camera_info.distortion_model = "plumb_bob"; 
+    _reply.camera_info.D.resize(5); 
+    for(unsigned int ii=0; ii<5; ii++) _reply.camera_info.D[ii] = paramsD.at<double>(ii);
+    for(unsigned int ii=0; ii<3; ii++)
+        for(unsigned int jj=0; jj<3; jj++) _reply.camera_info.K[ii*3+jj] = matrixK.at<double>(ii,jj);
+    for(unsigned int ii=0; ii<3; ii++)
+        for(unsigned int jj=0; jj<4; jj++) _reply.camera_info.P[ii*4+jj] = matrixP.at<double>(ii,jj);        
+    _reply.camera_info.R[0] = 1.; //R is the identity (no rotation)
+    _reply.camera_info.R[4] = 1.; //R is the identity (no rotation)
+    _reply.camera_info.R[8] = 1.; //R is the identity (no rotation)
+    _reply.camera_info.binning_x = 1;
+    _reply.camera_info.binning_y = 1;
+    _reply.camera_info.roi.width = 0;
+    _reply.camera_info.roi.height = 0; 
+    _reply.camera_info.roi.do_rectify = false; 
+
     //return
     return true;     
 }
