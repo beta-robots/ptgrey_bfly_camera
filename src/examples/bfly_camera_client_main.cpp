@@ -25,37 +25,11 @@ int main(int argc, char **argv)
     }
 
     //make a copy and display the received image
-//     sensor_msgs::ImageConstPtr image_msg_ptr(&image_service.response.image); 
-//     std::cout << "image_msg_ptr.use_count(): " << image_msg_ptr.use_count() << std::endl; 
-    cv_bridge::CvImagePtr cv_bridge_ptr(
-                        cv_bridge::toCvCopy(image_service.response.image, 
-                                            image_service.response.image.encoding));     
-//     cv_bridge::CvImageConstPtr cv_bridge_ptr(
-//                     cv_bridge::toCvCopy(&image_service.response.image, 
-//                                         image_service.response.image.encoding)); 
+    cv_bridge::CvImagePtr cv_bridge_ptr; 
+    cv_bridge_ptr = cv_bridge::toCvCopy(image_service.response.image, 
+                                        image_service.response.image.encoding); 
     cv::imshow("Response Image (raw)", cv_bridge_ptr->image);
     cv::waitKey(0);        
-    
-    //display received image (sharing instead of copying... causes run time core dumped error)
-//     cv_bridge::CvImageConstPtr cv_bridge_ptr;
-//     sensor_msgs::ImageConstPtr image_msg_ptr(&image_service.response.image); 
-//     cv_bridge_ptr = cv_bridge::toCvShare(image_msg_ptr, image_service.response.image.encoding); 
-//     cv::imshow("Response Image (raw)", cv_bridge_ptr->image);
-//     cv::waitKey(0);        
-        
-    //rectify image
-    
-    //display rectified image
-    
-    //release
-//     std::cout << __LINE__ << std::endl;
-//     image_msg_ptr.reset(); 
-//     std::cout << __LINE__ << std::endl;
-    
-//     delete (image_msg_ptr.get()); 
-//     std::cout << __LINE__ << std::endl;
-//     delete (cv_bridge_ptr.get());
-//     std::cout << __LINE__ << std::endl;
     
     //exit program
     return 0;
