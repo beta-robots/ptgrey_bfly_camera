@@ -40,6 +40,7 @@ find_package(
     COMPONENTS 
         roscpp 
         rospy 
+        rosconsole
 #         genmsg
         dynamic_reconfigure 
         std_msgs
@@ -81,6 +82,7 @@ catkin_package(
     CATKIN_DEPENDS 
         roscpp 
         rospy 
+        rosconsole
 #         genmsg
         dynamic_reconfigure 
         std_msgs
