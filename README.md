@@ -9,9 +9,9 @@ The package has been tested with the following dependencies:
 * Ubuntu 16.04
 * CMake + gcc
 * [ROS Kinetic](http://wiki.ros.org/kinetic)
-* [OpenCV v3.1](http://www.opencv.org/) (shipped with ROS Kinetic)
+* [OpenCV v3.1 and 3.2](http://www.opencv.org/) (shipped with ROS Kinetic)
+* [Forked](https://github.com/beta-robots/common_msgs) version of ros common_msg metapackage, with two extra services added at sensor_msgs package. Clone it at your ROS workspace. 
 * FlyCapture2 (propietary SDK from the manufacturer)
-
 
 To install the FlyCapture2 SDK dependency:
 
@@ -30,21 +30,27 @@ $ catkin_make --only-pkg-with-deps ptgrey_bfly_camera
 ```
 
 ### ROS node configuration
-Edit the .yaml file at config/ folder with the required parameters. 
+Edit the .yaml file at config/ folder with the wished parameters. Specially set the run_mode, indicating if you want the camera to run as a SERVER (image as a service), or as a PUBLISHER (image streaming). 
 
 
 ### ROS node execution
-Run the node (by default a rviz window will appear)
+Run the node (by default an rviz window will appear)
 ```shell
 $ roslaunch ptgrey_bfly_camera ptgrey_bfly_camera.launch 
 ```
-If you are operating the node in run mode "SERVER", from another terminal request the image capture service with the number of images requested. 
+If the camera runs as a PUBLISHER, this node fulfills with the conventions specified [here](http://wiki.ros.org/image_pipeline#Hardware_Requirements), about topics and service naming. 
+
+If the camera operates as a SERVER, please request the image service from another terminal, with the exposure parameter (0 means auto). [This service](https://github.com/beta-robots/common_msgs/blob/kinetic-devel/sensor_msgs/srv/SnapshotImage.srv) will respond with a concatenation of two ROS sensor messages: [Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html) and [CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html)
 ```shell
-$ rosservice call /ptgrey_bfly_camera/bfly_server "num_images: 10"
+$ rosservice call /ptgrey_bfly_camera/image_server "exposure: 0"
 ```
 
+### Intrinsics calibration and camera_info (topic and service)
+The node will look for a yaml file, with the intrinsics calibration parameters, at folder /calibration. The camera_info topic will publish the parameters read from this file.
+If there is no file available, the node will run anyway, but the camera_info topic will publish invalid data. In case you need a calibrated camera, execute a procedure such as [this one](http://wiki.ros.org/camera_calibration).  At the end of such procedure, tha calibration node will call a service implemented in the camera node, requesting to store the calibration data, so a calibration file will be created and the camera_info topic will publish the calibration params. 
+
 ### Troubleshooting
-The tool flycap has a set of options to configure the camera, like setting the device IP among others. 
+The tool flycap, installed with camera's manufacturer SDK, has a set of options to configure the camera, like setting the device IP among others. 
 ```shell
 $ flycap
 ```
