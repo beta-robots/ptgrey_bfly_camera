@@ -9,13 +9,13 @@ The package has been tested with the following dependencies:
 * Ubuntu 16.04
 * CMake + gcc
 * [ROS Kinetic](http://wiki.ros.org/kinetic)
-* [OpenCV v3.1 and 3.2](http://www.opencv.org/) (shipped with ROS Kinetic)
-* [Forked](https://github.com/beta-robots/common_msgs) version of ros common_msg metapackage, with two extra services added at sensor_msgs package. Clone it at your ROS workspace. 
+* [OpenCV v3.1 or 3.2](http://www.opencv.org/) (shipped with ROS Kinetic)
+* [Forked](https://github.com/beta-robots/common_msgs) version of ROS common_msg metapackage. Clone it at your ROS workspace. 
 * FlyCapture2 (propietary SDK from the manufacturer)
 
 To install the FlyCapture2 SDK dependency:
 
-1. Download the SDK from the [Point Grey's wbsite](https://www.ptgrey.com/support/downloads)
+1. Download the SDK from the [Point Grey's website](https://www.ptgrey.com/support/downloads)
 2. Install it by following the instructions in the README file included in the download. 
 
 
@@ -47,7 +47,7 @@ $ rosservice call /ptgrey_bfly_camera/image_server "exposure: 0"
 
 ### Intrinsics calibration and camera_info (topic and service)
 The node will look for a yaml file, with the intrinsics calibration parameters, at folder /calibration. The camera_info topic will publish the parameters read from this file.
-If there is no file available, the node will run anyway, but the camera_info topic will publish invalid data. In case you need a calibrated camera, execute a procedure such as [this one](http://wiki.ros.org/camera_calibration).  At the end of such procedure, tha calibration node will call a service implemented in the camera node, requesting to store the calibration data, so a calibration file will be created and the camera_info topic will publish the calibration params. 
+If there is no file available, the node will run anyway, but the camera_info topic will publish invalid data. In case you need a calibrated camera, execute a procedure such as [this one](http://wiki.ros.org/camera_calibration).  At the end of such procedure, tha calibration node will call a service implemented in the camera node, requesting to store the calibration data, so a calibration file will be created and the camera_info topic will publish the new calibration parameters found. 
 
 ### Troubleshooting
 The tool flycap, installed with camera's manufacturer SDK, has a set of options to configure the camera, like setting the device IP among others. 
