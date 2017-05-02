@@ -16,13 +16,13 @@ Device::Device()
     flycap_error_ = busMgr.GetNumOfCameras(&numCameras);
     if (flycap_error_ != FlyCapture2::PGRERROR_OK) 
     {
+        std::cout << "BflyCamera::Device::Device() ERROR connecting to device at line " << __LINE__ << std::endl;
         flycap_error_.PrintErrorTrace();
         return;
     }
-    std::cout << std::endl << "BflyCamera::Device::Device(): Number of cameras detected: " << numCameras << std::endl;
     if ( numCameras < 1 )
     {
-        std::cout << "BflyCamera::Device::Device() ERROR: No camera detected. EXIT. " << std::endl;
+        std::cout << "BflyCamera::Device::Device() ERROR connecting to device at line " << __LINE__ << std::endl;
         return;
     }
 
@@ -30,6 +30,7 @@ Device::Device()
     flycap_error_ = busMgr.GetCameraFromIndex(0, &flycap_guid_);
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
+        std::cout << "BflyCamera::Device::Device() ERROR connecting to device at line " << __LINE__ << std::endl;
         flycap_error_.PrintErrorTrace();
         return;
     }
@@ -38,6 +39,7 @@ Device::Device()
     flycap_error_ = busMgr.GetInterfaceTypeFromGuid( &flycap_guid_, &interfaceType );
     if ( flycap_error_ != FlyCapture2::PGRERROR_OK )
     {
+        std::cout << "BflyCamera::Device::Device() ERROR connecting to device at line " << __LINE__ << std::endl;
         flycap_error_.PrintErrorTrace();
         return;
     }
@@ -46,9 +48,9 @@ Device::Device()
         std::cout << "BflyCamera::Device::Device() ERROR: GigE camera not found" << std::endl;
     }
 
-    //set init flag
+    //set init flag to ok
     init_ok_ = true;
-    std::cout << "BflyCamera::Device::Device(): GigE camera found!" << std::endl;
+//     std::cout << "BflyCamera::Device::Device(): GigE camera found!" << std::endl;
 }
 
 Device::~Device()
@@ -154,10 +156,10 @@ int Device::startAcquisition()
     flycap_error_ = flycap_camera_.StartCapture(); // Start capturing images
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
+        std::cout << "BflyCamera::Device::startAcquisition() ERROR when starting acquisition" << std::endl; 
         flycap_error_.PrintErrorTrace();
         return ERROR;
     }
-    std::cout << "BflyCamera::Device: Start Image Acquisition" << std::endl;
     return SUCCESS;
 }
 
@@ -166,10 +168,10 @@ int Device::stopAcquisition()
     flycap_error_ = flycap_camera_.StopCapture();// Stop capturing images
     if (flycap_error_ != FlyCapture2::PGRERROR_OK)
     {
+        std::cout << "BflyCamera::Device::stopAcquisition() ERROR when stopping acquisition" << std::endl; 
         flycap_error_.PrintErrorTrace();
         return ERROR;
     }
-    std::cout << "BflyCamera::Device: Stop Image Acquisition" << std::endl;
     return SUCCESS;
 }
 

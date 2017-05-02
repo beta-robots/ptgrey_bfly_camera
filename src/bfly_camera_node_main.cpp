@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 
     switch(bfly.runMode())
     {
-        case SERVER: //just spin to give service             
+        case SERVER: //just spin to wait for service requests
             ros::spin(); 
             break;
             
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
                 //execute pending callbacks
                 ros::spinOnce(); 
                     
-                //just publish the image and camera info message
+                //publish the image and camera info message
                 bfly.publish(); 
                     
                 //relax to fit output rate

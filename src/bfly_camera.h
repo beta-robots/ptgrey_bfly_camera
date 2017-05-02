@@ -1,5 +1,5 @@
-#ifndef bflyCamera_H
-#define bflyCamera_H
+#ifndef bfly_camera_H
+#define bfly_camera_H
 
 //includes
 #include <iostream>

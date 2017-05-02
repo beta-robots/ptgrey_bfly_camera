@@ -38,46 +38,57 @@ BflyCameraNode::BflyCameraNode() :
     image_server_ = nh_.advertiseService("image_server", &BflyCameraNode::imageServiceCallback, this);
     set_camera_info_server_ = nh_.advertiseService("set_camera_info", &BflyCameraNode::SetCameraInfoServiceCallback, this);        
     
+    
     //constructs the camera object interfacing with HW
     camera_ = new BflyCamera::Device(); 
+    
+    //check construction
+    if ( !camera_->isInitOk() )
+    {
+        ROS_ERROR("Error at camera driver construction");
+        return; 
+    }
     
     //open/connect to the HW device
     if ( camera_->open() == BflyCamera::ERROR )
     {
-        std::cout << "BflyCameraNode::BflyCameraNode(): ERROR opening the camera" << std::endl;
+        ROS_ERROR("Error when opening the camera");
         return;        
     }
     
     //configure image acquisition according yaml inputs
     if ( camera_->configure(video_mode,pixel_format) == BflyCamera::ERROR )
     {
-        std::cout << "BflyCameraNode::BflyCameraNode(): ERROR configuring the camera" << std::endl;
+        ROS_ERROR("Error when configuring the camera driver");
         return;        
     }
-        
-    //starts camera image acquisition
-    if ( camera_->startAcquisition() == BflyCamera::ERROR )
+
+    //sets calibration data from calibration file. If error, just warn. 
+    if ( ! setCalibrationFromFile() )
     {
-        std::cout << "BflyCameraNode::BflyCameraNode(): ERROR starting image acquisition" << std::endl;
-        return;
-    }
-    
-    //sets calibration data from calibration file
-    if ( setCalibrationFromFile() )
-    {
-        std::cout << "BflyCameraNode::BflyCameraNode(): Calibration data load from file. camera_info topic will publish these data." << std::endl;
-    }
-    else //some error occurred
-    {
-        std::cout << "BflyCameraNode::BflyCameraNode(): WARNING! Calibration file not found. camera_info topic will publish incorrect data." << std::endl;
+       ROS_WARN("Calibration file not found. camera_info topic will publish incorrect data."); 
     }
     
     //print camera info
-    camera_->printDeviceInfo();
+    //camera_->printDeviceInfo();
+    
+    //... and finally, starts camera image acquisition
+    if ( camera_->startAcquisition() == BflyCamera::ERROR )
+    {
+        ROS_ERROR("Error when starting image acquisition");
+        return;
+    }
+    
+    //camera running
+    ROS_INFO_STREAM("Black Fly camera device acquiring images");
+    ROS_INFO_STREAM("Black Fly camera node running in mode " << run_mode_ << " (0:S, 1:P)");
 }
         
 BflyCameraNode::~BflyCameraNode()
 {
+    //bye bye message
+    ROS_INFO("Camera device stopping and closing");
+    
     //free allocated memeory
     delete camera_; 
 }
@@ -163,6 +174,7 @@ bool BflyCameraNode::setCalibrationFromFile()
     else //file not opened
     {
         calibration_file_.release(); 
+        ROS_WARN("Error setting calibration data from file");
         return false; 
     }
 }
@@ -229,13 +241,13 @@ bool BflyCameraNode::SetCameraInfoServiceCallback(
             sensor_msgs::SetCameraInfo::Response & _reply)
 {
     //Message
-    std::cout << "BflyCameraNode::BflyCameraNode(): Setting new camera info parameters " << std::endl; 
+    ROS_INFO("Setting new camera info parameters");
     
     //open an openCV-yaml file
     calibration_file_.open(camera_info_file_, cv::FileStorage::WRITE); 
     if ( ! calibration_file_.isOpened() )
     {
-        std::cout << "BflyCameraNode::BflyCameraNode(): ERROR opening file to store calibration data: " << camera_info_file_ << " not found." << std::endl;
+        ROS_ERROR_STREAM("Error opening a file to store calibration data:" << camera_info_file_ << " not found.");
         _reply.success = false; 
         _reply.status_message = -1; 
         return false;
@@ -244,7 +256,7 @@ bool BflyCameraNode::SetCameraInfoServiceCallback(
     //check distortion model. Only plumb_bob implemented with 5 parameters
     if ( _request.camera_info.distortion_model != "plumb_bob")
     {
-        std::cout << "BflyCameraNode::BflyCameraNode(): ERROR, only plumb_bob distortion model allowed (5 parameters)" << std::endl;
+        ROS_ERROR("Distortion model not known. Only \"plumb_bob\" distortion model allowed (5 parameters)");
         _reply.success = false; 
         _reply.status_message = -1; 
         return false;        
