@@ -41,13 +41,13 @@ find_package(
         roscpp 
         rospy 
         rosconsole
-#         genmsg
         dynamic_reconfigure 
         std_msgs
         sensor_msgs 
         image_transport 
         cv_bridge
         image_geometry
+        message_generation
 )
 INCLUDE_DIRECTORIES(src/ ${catkin_INCLUDE_DIRS})
 
@@ -83,18 +83,20 @@ catkin_package(
         roscpp 
         rospy 
         rosconsole
-#         genmsg
         dynamic_reconfigure 
         std_msgs
         sensor_msgs
         image_transport 
         cv_bridge
         image_geometry
+        message_runtime
 )
 
 # Build library, linked with Point Grey's SDK
 ADD_LIBRARY(${PROJECT_NAME}_LIB SHARED 
             ${SRCS_LIB})
+add_dependencies(${PROJECT_NAME}_LIB
+                  ${catkin_EXPORTED_TARGETS})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}_LIB 
                       ${ptgrey_LIBRARIES}
                       ${OpenCV_LIBS})
@@ -102,9 +104,8 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}_LIB
 # Build ROS node executable
 ADD_EXECUTABLE(${PROJECT_NAME} 
                ${SRCS_NODE})
-add_dependencies(${PROJECT_NAME} 
-                 ${PROJECT_NAME}_gencpp 
-                 ${PROJECT_NAME}_gencfg)               
+add_dependencies(${PROJECT_NAME}
+                 ${catkin_EXPORTED_TARGETS})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
                       ${PROJECT_NAME}_LIB
                       ${catkin_LIBRARIES})
