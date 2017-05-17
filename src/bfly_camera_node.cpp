@@ -73,10 +73,13 @@ BflyCameraNode::BflyCameraNode() :
     //camera_->printDeviceInfo();
     
     //... and finally, starts camera image acquisition
-    if ( camera_->startAcquisition() == BflyCamera::ERROR )
+    if( this->run_mode_ == 1 )
     {
-        ROS_ERROR("Error when starting image acquisition");
-        return;
+        if ( camera_->startAcquisition() == BflyCamera::ERROR )
+        {
+                ROS_ERROR("Error when starting image acquisition");
+                return;
+        }
     }
     
     //camera running
@@ -186,8 +189,17 @@ bool BflyCameraNode::imageServiceCallback(sensor_msgs::SnapshotImage::Request  &
                                           sensor_msgs::SnapshotImage::Response & _reply)
 {
     //Get image data in openCV format
+    if ( camera_->startAcquisition() == BflyCamera::ERROR )
+    {
+        ROS_ERROR("Error when starting image acquisition");
+        return false;
+    }
     camera_->getCurrentImage(image_.image);
-    
+    if( camera_->stopAcquisition() == BflyCamera::ERROR )
+    {
+         ROS_WARN("Couldn't stop image acquisition");
+         return false;   
+    }
     //set image response
     ros::Time ts = ros::Time::now();
     image_.header.seq ++;
