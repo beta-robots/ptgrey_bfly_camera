@@ -186,6 +186,13 @@ bool BflyCameraNode::imageServiceCallback(sensor_msgs::SnapshotImage::Request  &
                                           sensor_msgs::SnapshotImage::Response & _reply)
 {
     //Get image data in openCV format
+    if ( camera_->startAcquisition() == BflyCamera::ERROR )
+    {
+        ROS_ERROR("Error when starting image acquisition");
+        return false;
+    }
+    ros::Duration(0.5).sleep(); // to allow camera to be really open before getting the image (otherwise we get images with still low light)
+
     camera_->getCurrentImage(image_.image);
     
     //set image response
