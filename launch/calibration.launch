@@ -1,0 +1,22 @@
+<launch>
+
+    <!-- Black fly camera node -->
+	<arg name="config_file" default="$(find ptgrey_bfly_camera)/config/ptgrey_bfly_camera_params.yaml" doc="YAML file with configutaion parameters"/>
+    <node
+        pkg="ptgrey_bfly_camera"
+        type="ptgrey_bfly_camera"
+        name="ptgrey_bfly_camera"
+        output="screen">
+        <rosparam command="load" file="$(arg config_file)"/>
+    </node>
+
+	<!-- camera calibration -->
+	<node
+		name="camera_calibration"
+		pkg="camera_calibration"
+		type="cameracalibrator.py"
+		output="screen"
+		args="--size 8x6 --square 0.0245 image:=/ptgrey_bfly_camera/image_raw camera:=ptgrey_bfly_camera">
+	</node>
+
+</launch>
