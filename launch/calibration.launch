@@ -1,4 +1,5 @@
 <launch>
+	<arg name="square_size" default="0.0245" doc="Size of the side of a single square of te pattern, in meters"/>
 
     <!-- Black fly camera node -->
 	<arg name="config_file" default="$(find ptgrey_bfly_camera)/config/ptgrey_bfly_camera_params.yaml" doc="YAML file with configutaion parameters"/>
@@ -16,7 +17,7 @@
 		pkg="camera_calibration"
 		type="cameracalibrator.py"
 		output="screen"
-		args="--size 8x6 --square 0.0245 image:=/ptgrey_bfly_camera/image_raw camera:=ptgrey_bfly_camera">
+		args="--size 9x6 --square $(arg square_size) image:=/ptgrey_bfly_camera/image_raw camera:=ptgrey_bfly_camera">
 	</node>
 
 </launch>
