@@ -1,7 +1,7 @@
 <launch>
 	<arg name="square_size" default="0.0245" doc="Size of the side of a single square of te pattern, in meters"/>
 
-    <!-- Black fly camera node -->
+    <!-- BlackFly camera node -->
 	<arg name="config_file" default="$(find ptgrey_bfly_camera)/config/ptgrey_bfly_camera_params.yaml" doc="YAML file with configutaion parameters"/>
     <node
         pkg="ptgrey_bfly_camera"
